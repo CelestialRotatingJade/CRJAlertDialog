@@ -1,0 +1,16 @@
+use_frameworks!
+
+platform :ios, '9.0'
+
+target 'CRJAlertDialog_Example' do
+  pod 'CRJAlertDialog', :path => '../'
+  pod 'Masonry'
+  pod 'CRJUtlsScreens'
+  pod 'Toast'
+  
+  target 'CRJAlertDialog_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
