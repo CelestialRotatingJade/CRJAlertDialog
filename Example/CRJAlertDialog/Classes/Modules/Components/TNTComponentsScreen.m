@@ -14,7 +14,7 @@
 #import "DLTestViewController.h"
 #import "TNTSingleSelectCell.h"
 
-@interface TNTComponentsScreen ()<CRJAlertBaseDialogDelegate>
+@interface TNTComponentsScreen ()<AlertBaseDialogDelegate>
 @property(nonatomic, strong) NSArray * dataSource;
 @end
 
@@ -78,7 +78,10 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == 0) {
         if (indexPath.row == 0) {
-            [self presentViewController:CRJDateDialog.build.withDelegate(self) animation:[CRJDateDialog defaultAnimator] completion:nil];
+            AlertDateDialog *dialog = AlertDateDialog.build;
+            dialog.withInfo(@"请选择-开始时间").withDelegate(self).prepareFinish();
+            [self presentViewController:dialog
+                              animation:dialog.animator completion:nil];
 
         }
         else if (indexPath.row == 1) {
@@ -86,10 +89,12 @@
             for (int i = 0; i < 10; i++) {
                 [datas addObject:[NSString stringWithFormat:@"%d",i]];
             }
-            
-            CRJAlertBaseDialog *alert = CRJSingleChoiceDialog.build.withCellClass(TNTSingleSelectCell.class).withAnimator([CRJSingleChoiceDialog defaultAnimator]).withDelegate(self).withShowDatas(datas).withSelectedItem(@"4");
-            
-            [self presentViewController:alert animation:[CRJSingleChoiceDialog defaultAnimator] completion:nil];
+            AlertSingleChoiceDialog *dialog = AlertSingleChoiceDialog.build;
+            dialog.withCellClass(TNTSingleSelectCell.class);
+            dialog.withInfo(@"请选择-开始时间").withDelegate(self);
+            dialog.withSelectedItem(@"").withShowDatas(datas).prepareFinish();
+            [self presentViewController:dialog
+                              animation:dialog.animator completion:nil];
 
         }
         else if (indexPath.row == 2) {
@@ -98,25 +103,26 @@
                 [datas addObject:[NSString stringWithFormat:@"%d",i]];
             }
             
-            CRJAlertBaseDialog *alert = CRJMultiChoiceDialog.build.withAnimator([CRJMultiChoiceDialog defaultAnimator]).withDelegate(self).withShowDatas(datas).withSelectedItem(@"4");
-            
-            [self presentViewController:alert animation:[CRJMultiChoiceDialog defaultAnimator] completion:nil];
-
+            AlertMultiChoiceDialog *dialog = AlertMultiChoiceDialog.build;
+            dialog.withInfo(@"-请选择-").withDelegate(self);
+            dialog.withSelectedItem(@"4").withShowDatas(datas).prepareFinish();
+            [self presentViewController:dialog
+                              animation:dialog.animator completion:nil];
         }
     }
 }
 
-#pragma mark - CRJAlertBaseDialogDelegate
-- (void)baseDialog:(CRJAlertBaseDialog *)dialog didSelectedItems:(NSArray *)items {
+#pragma mark - AlertBaseDialogDelegate
+- (void)baseDialog:(AlertBaseDialog *)dialog didSelectedItems:(NSArray *)items {
     if (items) {
         [self.view makeToast:[NSString stringWithFormat:@"%@",items]];
     }
 }
 
-- (void)baseDialogWillShow:(CRJAlertBaseDialog *)dialog {
-    if ([dialog isKindOfClass:CRJMultiChoiceDialog.class]) {
-        [((CRJMultiChoiceDialog *)dialog).disableDatas addObject:@"3"];
-        [((CRJMultiChoiceDialog *)dialog).tableView reloadData];
+- (void)baseDialogWillShow:(AlertBaseDialog *)dialog {
+    if ([dialog isKindOfClass:AlertMultiChoiceDialog.class]) {
+        [((AlertMultiChoiceDialog *)dialog).disableItems addObject:@"3"];
+        [((AlertMultiChoiceDialog *)dialog).tableView reloadData];
     }
 }
 

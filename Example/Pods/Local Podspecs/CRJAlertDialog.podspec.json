@@ -20,6 +20,11 @@
   },
   "public_header_files": "CRJAlertDialog/**/CRJAlertDialog.h",
   "source_files": "CRJAlertDialog/**/CRJAlertDialog.h",
+  "resource_bundles": {
+    "CRJAlertDialog": [
+      "CRJAlertDialog/Assets/*.png"
+    ]
+  },
   "subspecs": [
     {
       "name": "BaseDialog",

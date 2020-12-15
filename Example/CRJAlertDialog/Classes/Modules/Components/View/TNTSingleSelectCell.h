@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TNTSingleSelectCell : CRJSingleChoiceDialogCell
+@interface TNTSingleSelectCell : AlertSingleChoiceDialogCell
 
 @end
 

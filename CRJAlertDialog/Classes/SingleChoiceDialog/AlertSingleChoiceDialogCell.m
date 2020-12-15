@@ -1,13 +1,14 @@
 //
-//  CRJSingleChoiceDialogCell.m
-//  CRJAlertController
+//  AlertSingleChoiceDialogCell.m
+//  CloudClaim
 //
-//  Created by zhuyuhui on 2020/12/12.
+//  Created by 朱玉辉(EX-ZHUYUHUI001) on 2020/12/14.
+//  Copyright © 2020 朱敏(保险支持团队保险研发组). All rights reserved.
 //
 
-#import "CRJSingleChoiceDialogCell.h"
+#import "AlertSingleChoiceDialogCell.h"
 
-@implementation CRJSingleChoiceDialogCell
+@implementation AlertSingleChoiceDialogCell
 
 - (void)awakeFromNib {
     [super awakeFromNib];
@@ -68,7 +69,6 @@
     }
 }
 
-
 #pragma mark - 懒加载
 - (UILabel *)titleLabel {
     if (!_titleLabel) {
@@ -81,5 +81,4 @@
     }
     return _titleLabel;
 }
-
 @end

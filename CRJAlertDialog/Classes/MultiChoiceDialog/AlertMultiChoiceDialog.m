@@ -1,27 +1,20 @@
 //
-//  CRJMultiChoiceDialog.m
-//  CRJAlertController
+//  AlertMultiChoiceDialog.m
+//  CloudClaim
 //
-//  Created by zhuyuhui on 2020/12/13.
+//  Created by 朱玉辉(EX-ZHUYUHUI001) on 2020/12/14.
+//  Copyright © 2020 朱敏(保险支持团队保险研发组). All rights reserved.
 //
 
-#import "CRJMultiChoiceDialog.h"
+#import "AlertMultiChoiceDialog.h"
 
-
-@interface CRJMultiChoiceDialog ()<UITableViewDelegate, UITableViewDataSource>
+@interface AlertMultiChoiceDialog ()<UITableViewDelegate, UITableViewDataSource>
 
 @end
 
-@implementation CRJMultiChoiceDialog
+@implementation AlertMultiChoiceDialog
 static NSString *identifier = @"cell";
 
-+ (TransitionAnimator *)defaultAnimator {
-    DLAnimationBottom *animator = [[DLAnimationBottom alloc] init];
-    CGFloat screenW = [UIScreen mainScreen].bounds.size.width;
-    CGFloat screenH = [UIScreen mainScreen].bounds.size.height;
-    animator.contentHeightRatio = 250.f / screenH;
-    return animator;
-}
 #pragma mark -
 #pragma mark - clickEvent
 
@@ -31,7 +24,7 @@ static NSString *identifier = @"cell";
 
 - (void)clickConfirm {
     if (self.delegate && [self.delegate respondsToSelector:@selector(baseDialog:didSelectedItems:)]) {
-        [self.delegate baseDialog:self didSelectedItems:self.selectDatas];
+        [self.delegate baseDialog:self didSelectedItems:self.checkedItems];
     }
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -45,17 +38,15 @@ static NSString *identifier = @"cell";
 }
 
 - (void)setupUI {
-    self.view.backgroundColor = [UIColor whiteColor];
-    
 #pragma mark - 顶部
-    UIView *topBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, 40)];
+    UIView *topBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 40)];
     [self.view addSubview:topBarView];
     
     
     UILabel *titleLabel = [[UILabel alloc] init];
     titleLabel.textColor = [UIColor blackColor];
     titleLabel.text = @"请选择";
-    titleLabel.font = [UIFont systemFontOfSize:16.0f];
+    titleLabel.font = [UIFont systemFontOfSize:14.0f];
     [topBarView addSubview:titleLabel];
     [titleLabel mas_makeConstraints:^(MASConstraintMaker *make) {
         make.centerX.centerY.equalTo(titleLabel.superview);
@@ -68,10 +59,10 @@ static NSString *identifier = @"cell";
     UIButton *cancelBtn = [[UIButton alloc] init];
     [cancelBtn setTitle:@"取消" forState:UIControlStateNormal];
     [cancelBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    cancelBtn.titleLabel.font = [UIFont systemFontOfSize:16.0f];
+    cancelBtn.titleLabel.font = [UIFont systemFontOfSize:14.0f];
     [topBarView addSubview:cancelBtn];
     [cancelBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.equalTo(cancelBtn.superview).offset(15);
+        make.left.equalTo(cancelBtn.superview).offset(12);
         make.centerY.equalTo(cancelBtn.superview);
     }];
     [cancelBtn addTarget:self action:@selector(clickCancel) forControlEvents:UIControlEventTouchUpInside];
@@ -79,19 +70,26 @@ static NSString *identifier = @"cell";
     UIButton *confirmBtn = [[UIButton alloc] init];
     [confirmBtn setTitle:@"确定" forState:UIControlStateNormal];
     [confirmBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    confirmBtn.titleLabel.font = [UIFont systemFontOfSize:16.0f];
+    confirmBtn.titleLabel.font = [UIFont systemFontOfSize:14.0f];
     [topBarView addSubview:confirmBtn];
     [confirmBtn mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.right.equalTo(confirmBtn.superview).offset(-15);
+        make.right.equalTo(confirmBtn.superview).offset(-12);
         make.centerY.equalTo(confirmBtn.superview);
     }];
     [confirmBtn addTarget:self action:@selector(clickConfirm) forControlEvents:UIControlEventTouchUpInside];
     
-    
+    // 顶部线条
+    UIView *line = [[UIView alloc] init];
+    line.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.2];
+    [topBarView addSubview:line];
+    [line mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.left.bottom.right.equalTo(line.superview).offset(0);
+        make.height.mas_equalTo(0.5);
+    }];
 #pragma mark - 其他
     self.dataSource = [NSMutableArray array];
-    self.selectDatas = [NSMutableArray array];
-    self.disableDatas = [NSMutableArray array];
+    self.checkedItems = [NSMutableArray array];
+    self.disableItems = [NSMutableArray array];
     
     [self.view addSubview:self.tableView];
     [self.tableView mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -100,7 +98,7 @@ static NSString *identifier = @"cell";
     }];
     
     if (!self.cellClass) {
-        self.cellClass = CRJMultiChoiceDialogCell.class;
+        self.cellClass = AlertMultiChoiceDialogCell.class;
     }
     [self.tableView registerClass:self.cellClass forCellReuseIdentifier:identifier];
     
@@ -114,10 +112,34 @@ static NSString *identifier = @"cell";
       [self.dataSource addObject:obj];
     }];
 
-    ///默认值
-    if (self.selectedItem && [self.dataSource containsObject:self.selectedItem]) {
+    if (self.selectedItem) {
+        if ([self.selectedItem isKindOfClass:[NSString class]]) {
+            NSString *selString = self.selectedItem;
+            NSArray *selData = @[];
+            if ([selString containsString:@","]) {
+                selData = [selString componentsSeparatedByString:@","];
+            }
+            else if ([selString containsString:@"，"]) {
+                selData = [selString componentsSeparatedByString:@"，"];
+            }
+            else {
+                selData = @[self.selectedItem];
+            }
+            
+            for (NSString *item in selData) {
+                if ([self.dataSource containsObject:item]) {
+                    [self.checkedItems addObject:item];
+                }
+            }
+        }
+        else if ([self.selectedItem isKindOfClass:[NSArray class]]) {
+            for (id item in self.selectedItem) {
+                if ([self.dataSource containsObject:item]) {
+                    [self.checkedItems addObject:item];
+                }
+            }
+        }
     }
-
     [self.tableView reloadData];
 }
 
@@ -134,11 +156,11 @@ static NSString *identifier = @"cell";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier];
-    if ([cell isKindOfClass:CRJMultiChoiceDialogCell.class]) {
+    if ([cell isKindOfClass:AlertMultiChoiceDialogCell.class]) {
         id data = [self.dataSource objectAtIndex:indexPath.row];
-        ((CRJMultiChoiceDialogCell *)cell).data = data;
-        ((CRJMultiChoiceDialogCell *)cell).dialog = self;
-        [((CRJMultiChoiceDialogCell *)cell) loadContent];
+        ((AlertMultiChoiceDialogCell *)cell).data = data;
+        ((AlertMultiChoiceDialogCell *)cell).dialog = self;
+        [((AlertMultiChoiceDialogCell *)cell) loadContent];
     }
     return cell;
 }
@@ -148,13 +170,10 @@ static NSString *identifier = @"cell";
         [self.delegate baseDialog:self didSelectRowAtIndexPath:indexPath];
     } else {
         id data = [self.dataSource objectAtIndex:indexPath.row];
-        if ([self.disableDatas containsObject:data]) {
-            return;
-        }
-        if ([self.selectDatas containsObject:data]) {
-            [self.selectDatas removeObject:data];
+        if ([self.checkedItems containsObject:data]) {
+            [self.checkedItems removeObject:data];
         } else {
-            [self.selectDatas addObject:data];
+            [self.checkedItems addObject:data];
         }
         [self.tableView reloadData];
     }
@@ -180,14 +199,39 @@ static NSString *identifier = @"cell";
     return 0.01;
 }
 
-#pragma mark - 懒加载
-- (CRJMultiChoiceDialog *(^)(Class cellClass))withCellClass;
-{
-    return ^ CRJMultiChoiceDialog * (Class cellClass) {
+#pragma mark - Useful Method
+- (void)enableItem:(id)item enable:(BOOL)enable {
+    if (!item) {
+        return;
+    }
+    [self.disableItems removeObject:item];
+    if (!enable) {
+        [self.disableItems addObject:item];
+    }
+    [self.tableView reloadData];
+}
+- (void)checkedItem:(id)item check:(BOOL)check{
+    if (!item) {
+        return;
+    }
+    [self.checkedItems removeObject:item];
+    if (check) {
+        [self.checkedItems addObject:item];
+    }
+    [self.tableView reloadData];
+}
+
+- (AlertMultiChoiceDialog *(^)(Class cellClass))withCellClass {
+    return ^ AlertMultiChoiceDialog * (Class cellClass) {
         self.cellClass = cellClass;
         return self;
     };
 }
+
+
+
+
+
 
 
 #pragma mark - 懒加载
@@ -199,7 +243,7 @@ static NSString *identifier = @"cell";
         _tableView.rowHeight = 48;
         _tableView.showsVerticalScrollIndicator = NO;
         _tableView.backgroundColor = [UIColor whiteColor];
-//        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+        _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
         if (@available(iOS 11.0, *)) {
             _tableView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
             _tableView.estimatedRowHeight = 0;
@@ -209,7 +253,7 @@ static NSString *identifier = @"cell";
             self.automaticallyAdjustsScrollViewInsets = NO;
         }
         
-        UIView *footer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, 40)];
+        UIView *footer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 40)];
         _tableView.tableFooterView = footer;
     }
     return _tableView;
