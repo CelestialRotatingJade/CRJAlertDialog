@@ -1,18 +1,18 @@
 PODS:
-  - CRJAlertDialog (0.1.0):
-    - CRJAlertDialog/BaseDialog (= 0.1.0)
-    - CRJAlertDialog/DateDialog (= 0.1.0)
-    - CRJAlertDialog/MultiChoiceDialog (= 0.1.0)
-    - CRJAlertDialog/SingleChoiceDialog (= 0.1.0)
-  - CRJAlertDialog/BaseDialog (0.1.0):
+  - CRJAlertDialog (0.1.1):
+    - CRJAlertDialog/BaseDialog (= 0.1.1)
+    - CRJAlertDialog/DateDialog (= 0.1.1)
+    - CRJAlertDialog/MultiChoiceDialog (= 0.1.1)
+    - CRJAlertDialog/SingleChoiceDialog (= 0.1.1)
+  - CRJAlertDialog/BaseDialog (0.1.1):
     - CRJCategories
     - CRJTransitionAnimator
     - Masonry
-  - CRJAlertDialog/DateDialog (0.1.0):
+  - CRJAlertDialog/DateDialog (0.1.1):
     - CRJAlertDialog/BaseDialog
-  - CRJAlertDialog/MultiChoiceDialog (0.1.0):
+  - CRJAlertDialog/MultiChoiceDialog (0.1.1):
     - CRJAlertDialog/BaseDialog
-  - CRJAlertDialog/SingleChoiceDialog (0.1.0):
+  - CRJAlertDialog/SingleChoiceDialog (0.1.1):
     - CRJAlertDialog/BaseDialog
   - CRJCategories (0.1.3):
     - CRJCategories/CALayer (= 0.1.3)
@@ -75,7 +75,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  CRJAlertDialog: dfa9803a4acf5c953bbb8155e71ad61ce51b6e9a
+  CRJAlertDialog: 03e1e84f586fc8d437a486db62563003c6aa1293
   CRJCategories: ba62c4b30268f1f3455f2a03fbba792f8a4d1503
   CRJCommon: bf4e373a509cf5db99a44ff0d382ff596e4b54b4
   CRJGeneralTools: 9568d17e06989bda99504662e1554fd1b6409032
@@ -87,4 +87,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 1799ce6fd277abeac4329579e35c9d6e3ecafbf9
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.0
